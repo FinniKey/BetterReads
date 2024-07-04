@@ -1,7 +1,9 @@
 ﻿using System.Runtime.Versioning;
 using HtmlAgilityPack;
 
-namespace SimpleWebScraper
+
+
+namespace BetterReads
 {
     public class BookReview
     {
@@ -21,25 +23,18 @@ namespace SimpleWebScraper
         public int? Rating { get; set; }
     }
 
-    class Program
+    class Scraper
     {
-        static void Main(string[] args)
+        public List<BookReview> getBookReviewInfoList(string reviewURL)
         {
-            Console.WriteLine("Hello, World!");
 
             var web = new HtmlWeb();
-            Console.WriteLine("loading webpage");
-            var document = web.Load("https://www.goodreads.com/review/list/91520258-jack-edwards?shelf=read"); // loads the webpage
-            Console.WriteLine("webpage loaded");
+            var document = web.Load(reviewURL); // loads the webpage
 
             var bookReviews = new List<BookReview>(); // list of all the book reviews from above
 
-            Console.WriteLine("getting all book reviews");
             var bookReviewHTMLElements = document.DocumentNode.QuerySelectorAll("tr.review");
 
-            Console.WriteLine(bookReviewHTMLElements.Count);
-
-            Console.WriteLine("going through reviews");
             foreach (var bookReviewHTMLElement in bookReviewHTMLElements)
             {
                 // if the book actually has a rating then we add it. if it does not, we do not.
@@ -48,11 +43,12 @@ namespace SimpleWebScraper
                 if (bookReviewHTMLElement.QuerySelector("td.rating div span").ChildAttributes("title").Any())
                 {
                     var title = HtmlEntity.DeEntitize(bookReviewHTMLElement.QuerySelector("td.title div a").InnerText);
-                    var titleFormatted = System.Text.RegularExpressions.Regex.Replace(title, @"\s+", "");
+                    var titleFormatted = System.Text.RegularExpressions.Regex.Replace(title, @"\s\s+|\n", "");
                     var url = "https://www.goodreads.com" + HtmlEntity.DeEntitize(bookReviewHTMLElement.QuerySelector("td.title div a").Attributes["href"].Value);
 
                     var ratingTitle = HtmlEntity.DeEntitize(bookReviewHTMLElement.QuerySelector("td.rating div span").Attributes["title"].Value);
 
+                    // for reasoning behind the following, see Rating entry of BookReview class
                     int rating = 0;
                     switch (ratingTitle)
                     {
@@ -77,9 +73,16 @@ namespace SimpleWebScraper
                             break;
                     }
                     bookReviews.Add(new BookReview() { Url = url, Title = titleFormatted, Rating = rating });
-                    //Console.WriteLine(title);
                 }
             }
+            return bookReviews;
+        }
+
+        static void Main(string[] args)
+        {
+            var scraper = new Scraper();
+
+            List<BookReview> bookReviews = scraper.getBookReviewInfoList("https://www.goodreads.com/review/list/91520258-jack-edwards?shelf=read");
 
             foreach (var BookReview in bookReviews)
             {
