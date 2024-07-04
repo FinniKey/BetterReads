@@ -1,12 +1,1 @@
-/bin
 /obj
-bin/Debug/net8.0/BetterReads.dll
-bin/Debug/net8.0/BetterReads.exe
-bin/Debug/net8.0/BetterReads.pdb
-obj/Debug/net8.0/apphost.exe
-obj/Debug/net8.0/BetterReads.AssemblyInfo.cs
-obj/Debug/net8.0/BetterReads.AssemblyInfoInputs.cache
-obj/Debug/net8.0/BetterReads.dll
-obj/Debug/net8.0/BetterReads.pdb
-obj/Debug/net8.0/ref/BetterReads.dll
-obj/Debug/net8.0/refint/BetterReads.dll
