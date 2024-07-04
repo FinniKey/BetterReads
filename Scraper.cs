@@ -25,7 +25,7 @@ namespace BetterReads
 
     class Scraper
     {
-        public List<BookReview> getBookReviewInfoList(string reviewURL)
+        private List<BookReview> getBookReviewInfoList(string reviewURL)
         {
 
             var web = new HtmlWeb();
