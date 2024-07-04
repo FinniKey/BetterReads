@@ -16,3 +16,4 @@ C:\Users\samdu\OneDrive\Documents\Projects\BetterReads\BetterReads\BetterReads\b
 C:\Users\samdu\OneDrive\Documents\Projects\BetterReads\BetterReads\BetterReads\bin\Debug\net8.0\HtmlAgilityPack.CssSelectors.dll
 C:\Users\samdu\OneDrive\Documents\Projects\BetterReads\BetterReads\BetterReads\obj\Debug\net8.0\BetterReads.csproj.AssemblyReference.cache
 C:\Users\samdu\OneDrive\Documents\Projects\BetterReads\BetterReads\BetterReads\obj\Debug\net8.0\BetterRe.67B8FA7F.Up2Date
+c:\Users\samdu\OneDrive\Documents\Projects\BetterReads\BetterReads\BetterReads\obj\Debug\net8.0\BetterReads.sourcelink.json

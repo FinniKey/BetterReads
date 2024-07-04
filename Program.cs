@@ -48,7 +48,7 @@ namespace SimpleWebScraper
                     var ratingTitle = HtmlEntity.DeEntitize(bookReviewHTMLElement.QuerySelector("td.rating div span").Attributes["title"].Value);
 
 
-                    Console.WriteLine(title + ratingTitle + " - " + url);
+                    Console.WriteLine(title + ratingTitle + " and " + url);
                 }
             }
         }
