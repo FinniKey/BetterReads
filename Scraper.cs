@@ -25,13 +25,13 @@ namespace BetterReads
         public int? NumRatings { get; set; }
     }
 
-    // public class Reviewer
-    // {
-    //     public string? Name { get; set; }
-    //     public string? Link { get; set; }
-    //     public List<BookReview>? Stuff { get; set; }
-    //     public int? Similarity { get; set; }
-    // }
+    public class Reviewer
+    {
+        public string? Name { get; set; }
+        public string? Link { get; set; }
+        public List<BookReview>? Stuff { get; set; }
+        public int? Similarity { get; set; }
+    }
 
     class Scraper
     {
@@ -91,10 +91,10 @@ namespace BetterReads
             return bookReviews;
         }
 
-        // private List<Reviewer> getReviews(string bookURL)
-        // {
-
-        // }
+        private List<Reviewer> getReviews(string bookURL)
+        {
+            return null;
+        }
 
         static void Main(string[] args)
         {
