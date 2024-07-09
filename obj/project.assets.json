@@ -116,11 +116,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\samdu\\OneDrive\\Documents\\Projects\\BetterReads\\BetterReads\\BetterReads\\BetterReads.csproj",
+      "projectUniqueName": "C:\\Users\\samdu\\Documents\\Projects\\BetterReads\\BetterReads.csproj",
       "projectName": "BetterReads",
-      "projectPath": "C:\\Users\\samdu\\OneDrive\\Documents\\Projects\\BetterReads\\BetterReads\\BetterReads\\BetterReads.csproj",
+      "projectPath": "C:\\Users\\samdu\\Documents\\Projects\\BetterReads\\BetterReads.csproj",
       "packagesPath": "C:\\Users\\samdu\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\samdu\\OneDrive\\Documents\\Projects\\BetterReads\\BetterReads\\BetterReads\\obj\\",
+      "outputPath": "C:\\Users\\samdu\\Documents\\Projects\\BetterReads\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\samdu\\AppData\\Roaming\\NuGet\\NuGet.Config"

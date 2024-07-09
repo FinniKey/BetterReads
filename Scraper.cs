@@ -21,7 +21,17 @@ namespace BetterReads
         5/5 = "it was amazing"
         */
         public int? Rating { get; set; }
+
+        public int? NumRatings { get; set; }
     }
+
+    // public class Reviewer
+    // {
+    //     public string? Name { get; set; }
+    //     public string? Link { get; set; }
+    //     public List<BookReview>? Stuff { get; set; }
+    //     public int? Similarity { get; set; }
+    // }
 
     class Scraper
     {
@@ -45,6 +55,9 @@ namespace BetterReads
                     var title = HtmlEntity.DeEntitize(bookReviewHTMLElement.QuerySelector("td.title div a").InnerText);
                     var titleFormatted = System.Text.RegularExpressions.Regex.Replace(title, @"\s\s+|\n", "");
                     var url = "https://www.goodreads.com" + HtmlEntity.DeEntitize(bookReviewHTMLElement.QuerySelector("td.title div a").Attributes["href"].Value);
+                    var numRatingsStr = HtmlEntity.DeEntitize(bookReviewHTMLElement.QuerySelector("td.num_ratings div.value").InnerText);
+                    var numRatingsStrFormatted = System.Text.RegularExpressions.Regex.Replace(numRatingsStr, @"\s+|\n|,", "");
+                    int numRatings = int.Parse(numRatingsStrFormatted);
 
                     var ratingTitle = HtmlEntity.DeEntitize(bookReviewHTMLElement.QuerySelector("td.rating div span").Attributes["title"].Value);
 
@@ -72,11 +85,16 @@ namespace BetterReads
                             rating = 5;
                             break;
                     }
-                    bookReviews.Add(new BookReview() { Url = url, Title = titleFormatted, Rating = rating });
+                    bookReviews.Add(new BookReview() { Url = url, Title = titleFormatted, Rating = rating, NumRatings = numRatings });
                 }
             }
             return bookReviews;
         }
+
+        // private List<Reviewer> getReviews(string bookURL)
+        // {
+
+        // }
 
         static void Main(string[] args)
         {
@@ -86,7 +104,7 @@ namespace BetterReads
 
             foreach (var BookReview in bookReviews)
             {
-                Console.WriteLine(BookReview.Rating + "/5 - " + BookReview.Title + "\n" + BookReview.Url + "\n");
+                Console.WriteLine(BookReview.Rating + "/5 - " + BookReview.Title + ". Ratings: " + BookReview.NumRatings + "\n" + BookReview.Url + "\n");
             }
         }
     }
