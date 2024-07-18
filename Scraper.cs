@@ -1,7 +1,18 @@
 ﻿using System.Runtime.Versioning;
 using HtmlAgilityPack;
 
-
+/*
+How it works:
+1. Goes through all (currently actually just 20) the books in a GoodReads review list.
+2. Gathers the URL, the book title, the what the book was rated, and how many times the book was rated across the site.
+3. Stores all that in BookReview.
+4. Repeats steps 2 and 3 until all books in the list have been collected.
+5. Goes through the reviews of the books found in that list.
+6. Gets their name and profile URL.
+7. Goes through their book review list and does steps 1-4. It adds all these books to the reviewers BookReview list
+8. While it does the above step, it adjusts the similarity index of the reviewer, and puts that into the Reviewer object
+9. After all the reviewers have completed the above process it returns a list of all the reviewers, their info, and their similarity index
+*/
 
 namespace BetterReads
 {
