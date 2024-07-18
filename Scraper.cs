@@ -40,6 +40,7 @@ namespace BetterReads
     {
         public string? Name { get; set; }
         public string? Url { get; set; }
+        public string? UserID { get; set; }
         public List<BookReview>? Stuff { get; set; }
         public int? Similarity { get; set; }
     }
@@ -118,7 +119,9 @@ namespace BetterReads
             {
                 string name = HtmlEntity.DeEntitize(reviewerHTMLElement.QuerySelector("section.ReviewerProfile__info span.Text__title4 div a").InnerText);
                 string url = HtmlEntity.DeEntitize(reviewerHTMLElement.QuerySelector("section.ReviewerProfile__info span.Text__title4 div a").Attributes["href"].Value);
-                reviewers.Add(new Reviewer() { Url = url, Name = name });
+                var userID = System.Text.RegularExpressions.Regex.Replace(url, @"https://www\.goodreads\.com/user/show/|-.+", "");
+                Console.WriteLine("UserID: " + userID);
+                reviewers.Add(new Reviewer() { Url = url, Name = name, UserID = userID });
             }
             return reviewers;
         }
@@ -138,7 +141,7 @@ namespace BetterReads
 
             foreach (Reviewer reviewer in reviewers)
             {
-                Console.WriteLine(reviewer.Name + ": " + reviewer.Url);
+                Console.WriteLine(reviewer.Name + ": " + reviewer.UserID);
             }
         }
     }
