@@ -39,7 +39,7 @@ namespace BetterReads
     public class Reviewer
     {
         public string? Name { get; set; }
-        public string? Link { get; set; }
+        public string? Url { get; set; }
         public List<BookReview>? Stuff { get; set; }
         public int? Similarity { get; set; }
     }
@@ -110,10 +110,16 @@ namespace BetterReads
 
             var reviewers = new List<Reviewer>(); // list of all the reviewers
 
-            var reviewerHTMLElements = document.DocumentNode.QuerySelectorAll("article.ReviewCard");
+            var reviewerHTMLElements = document.DocumentNode.QuerySelectorAll("div.ReviewerProfile");
 
             Console.WriteLine(reviewerHTMLElements.Count);
 
+            foreach (var reviewerHTMLElement in reviewerHTMLElements)
+            {
+                string name = HtmlEntity.DeEntitize(reviewerHTMLElement.QuerySelector("section.ReviewerProfile__info span.Text__title4 div a").InnerText);
+                string url = HtmlEntity.DeEntitize(reviewerHTMLElement.QuerySelector("section.ReviewerProfile__info span.Text__title4 div a").Attributes["href"].Value);
+                reviewers.Add(new Reviewer() { Url = url, Name = name });
+            }
             return reviewers;
         }
 
@@ -128,7 +134,12 @@ namespace BetterReads
             //     Console.WriteLine(BookReview.Rating + "/5 - " + BookReview.Title + ". Ratings: " + BookReview.NumRatings + "\n" + BookReview.Url + "\n");
             // }
 
-            var x = scraper.getReviews("https://www.goodreads.com/book/show/13623848-the-song-of-achilles");
+            var reviewers = scraper.getReviews("https://www.goodreads.com/book/show/13623848-the-song-of-achilles");
+
+            foreach (Reviewer reviewer in reviewers)
+            {
+                Console.WriteLine(reviewer.Name + ": " + reviewer.Url);
+            }
         }
     }
 }
