@@ -99,24 +99,36 @@ namespace BetterReads
                     bookReviews.Add(new BookReview() { Url = url, Title = titleFormatted, Rating = rating, NumRatings = numRatings });
                 }
             }
+
             return bookReviews;
         }
 
         private List<Reviewer> getReviews(string bookURL)
         {
-            return null;
+            var web = new HtmlWeb();
+            var document = web.Load(bookURL); // loads the webpage
+
+            var reviewers = new List<Reviewer>(); // list of all the reviewers
+
+            var reviewerHTMLElements = document.DocumentNode.QuerySelectorAll("article.ReviewCard");
+
+            Console.WriteLine(reviewerHTMLElements.Count);
+
+            return reviewers;
         }
 
         static void Main(string[] args)
         {
             var scraper = new Scraper();
 
-            List<BookReview> bookReviews = scraper.getBookReviewInfoList("https://www.goodreads.com/review/list/91520258-jack-edwards?shelf=read");
+            //List<BookReview> bookReviews = scraper.getBookReviewInfoList("https://www.goodreads.com/review/list/91520258-jack-edwards?shelf=read");
 
-            foreach (var BookReview in bookReviews)
-            {
-                Console.WriteLine(BookReview.Rating + "/5 - " + BookReview.Title + ". Ratings: " + BookReview.NumRatings + "\n" + BookReview.Url + "\n");
-            }
+            // foreach (var BookReview in bookReviews)
+            // {
+            //     Console.WriteLine(BookReview.Rating + "/5 - " + BookReview.Title + ". Ratings: " + BookReview.NumRatings + "\n" + BookReview.Url + "\n");
+            // }
+
+            var x = scraper.getReviews("https://www.goodreads.com/book/show/13623848-the-song-of-achilles");
         }
     }
 }
