@@ -1,4 +1,5 @@
-﻿using System.Runtime.Versioning;
+﻿using System.Collections;
+using System.Runtime.Versioning;
 using HtmlAgilityPack;
 
 /*
@@ -16,10 +17,30 @@ How it works:
 
 namespace BetterReads
 {
+
+    public class Book
+    {
+        public string Title { get; set; }
+        public string Url { get; set; }
+        public int NumRatings { get; set; }
+
+        public Book(string title, string url, int numRatings)
+        {
+            ArgumentException.ThrowIfNullOrEmpty(title);
+            ArgumentException.ThrowIfNullOrEmpty(url);
+            ArgumentException.ThrowIfNullOrWhiteSpace(url);
+            ArgumentOutOfRangeException.ThrowIfLessThan<int>(numRatings, 0);
+
+            this.Title = title;
+            this.Url = url;
+            this.NumRatings = numRatings;
+
+        }
+    }
+
     public class BookReview
     {
-        public string? Url { get; set; }
-        public string? Title { get; set; }
+        public Book ReviewedBook { get; set; }
 
         /*
         Goodreads has it rating stored in td.rating div.value span.staticstars.
@@ -31,18 +52,51 @@ namespace BetterReads
         4/5 = "really liked it"
         5/5 = "it was amazing"
         */
-        public int? Rating { get; set; }
+        public int Rating { get; set; }
 
-        public int? NumRatings { get; set; }
+        public Reviewer RVer { get; set; }
+
+        public BookReview(Book book, int rating, Reviewer rver)
+        {
+            ArgumentOutOfRangeException.ThrowIfLessThan<int>(rating, 1); // 1 is minimum rating
+            ArgumentOutOfRangeException.ThrowIfGreaterThan<int>(rating, 5); // 5 is maximum rating
+
+            this.ReviewedBook = book;
+            this.Rating = rating;
+            this.RVer = rver;
+        }
     }
 
     public class Reviewer
     {
-        public string? Name { get; set; }
-        public string? Url { get; set; }
-        public string? UserID { get; set; }
-        public List<BookReview>? Stuff { get; set; }
-        public int? Similarity { get; set; }
+        public string Name { get; set; }
+        public string Url { get; set; }
+        public string UserID { get; set; }
+        public List<BookReview> Reviews { get; }
+        public float Similarity { get; set; }
+
+        public Reviewer(string name, string url, String userid)
+        {
+            this.Name = name;
+            this.Url = url;
+            this.UserID = userid;
+            Reviews = new List<BookReview>();
+        }
+
+        public bool addReview(BookReview br)
+        {
+            this.Reviews.Add(br);
+            return true;
+        }
+
+        /**
+        Calculates the similarity of the reviewer to the user.
+        Doesn't do that right now. Just returns the default float value (0) unless Similarity is set to something else.
+        */
+        public float calculateSimilarity()
+        {
+            return Similarity;
+        }
     }
 
     class Scraper
