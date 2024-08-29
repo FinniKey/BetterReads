@@ -59,16 +59,36 @@ namespace BetterReads
         */
         public int Rating { get; set; }
 
-        public Reviewer RVer { get; set; }
-
-        public BookReview(Book book, int rating, Reviewer rver)
+        public BookReview(Book book, int rating)
         {
             ArgumentOutOfRangeException.ThrowIfLessThan<int>(rating, 1); // 1 is minimum rating
             ArgumentOutOfRangeException.ThrowIfGreaterThan<int>(rating, 5); // 5 is maximum rating
 
             this.ReviewedBook = book;
             this.Rating = rating;
-            this.RVer = rver;
+        }
+
+        public static int ConvertRating(string ratingString)
+        {
+            switch (ratingString)
+            {
+                case "did not like it":
+                    return 1;
+                case "it was ok":
+                    return 2;
+                case "liked it":
+                    return 3;
+                case "really liked it":
+                    return 4;
+                case "it was amazing":
+                    return 5;
+            }
+            return 0;
+        }
+
+        public override string ToString()
+        {
+            return this.Rating + "/5: " + this.ReviewedBook.ToString();
         }
     }
 
@@ -114,6 +134,12 @@ namespace BetterReads
             string mainUsername = Scraper.getUsernameFromProfileID(mainProfileUrl);
             Reviewer mainReviewer = new Reviewer(mainUsername, mainProfileUrl, mainID); // user everyone is compared to
             Scraper.addReviewersReadBooks(mainReviewer);
+
+            Console.WriteLine(mainReviewer.Name + " reviews:");
+            foreach (BookReview bookReview in mainReviewer.Reviews)
+            {
+                Console.WriteLine(bookReview.ToString());
+            }
         }
 
         private static void addReviewersReadBooks(Reviewer reviewer)
@@ -135,8 +161,12 @@ namespace BetterReads
                     var bookNumRatingsStrFormatted = System.Text.RegularExpressions.Regex.Replace(bookNumRatingsStr, @"\s+|\n|,", "");
                     int bookNumRatings = int.Parse(bookNumRatingsStrFormatted);
 
+                    var ratingString = HtmlEntity.DeEntitize(bookReviewHTMLElement.QuerySelector("td.rating div span").Attributes["title"].Value);
+                    int rating = BookReview.ConvertRating(ratingString);
+
                     Book book = new Book(bookTitle, bookURL, bookNumRatings);
-                    Console.WriteLine(book.ToString());
+                    BookReview bookReview = new BookReview(book, rating);
+                    reviewer.addReview(bookReview);
                 }
             }
         }
