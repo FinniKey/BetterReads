@@ -124,7 +124,7 @@ namespace BetterReads
         static void Main(string[] args)
         {
             //string mainProfileUrl = args[0];
-            string mainProfileUrl = "https://www.goodreads.com/author/show/20013214.Jack_Edwards";
+            string mainProfileUrl = "https://www.goodreads.com/author/show/20013214.Jack_Edwards"; // example for ease of use
             int mainID = Scraper.getIDFromProfileURL(mainProfileUrl);
             string mainUsername = Scraper.getUsernameFromProfileID(mainProfileUrl);
             Reviewer mainReviewer = new Reviewer(mainUsername, mainProfileUrl, mainID); // user everyone is compared to
