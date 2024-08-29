@@ -36,6 +36,11 @@ namespace BetterReads
             this.NumRatings = numRatings;
 
         }
+
+        public override string ToString()
+        {
+            return "" + this.Title + " | " + this.NumRatings + " total ratings | " + this.Url;
+        }
     }
 
     public class BookReview
@@ -101,7 +106,42 @@ namespace BetterReads
 
     public static class Scraper
     {
-        static int getIDFromProfileURL(string profileURL)
+        static void Main(string[] args)
+        {
+            //string mainProfileUrl = args[0];
+            string mainProfileUrl = "https://www.goodreads.com/author/show/20013214.Jack_Edwards";
+            int mainID = Scraper.getIDFromProfileURL(mainProfileUrl);
+            string mainUsername = Scraper.getUsernameFromProfileID(mainProfileUrl);
+            Reviewer mainReviewer = new Reviewer(mainUsername, mainProfileUrl, mainID); // user everyone is compared to
+            Scraper.addReviewersReadBooks(mainReviewer);
+        }
+
+        private static void addReviewersReadBooks(Reviewer reviewer)
+        {
+            string readBooksURL = "https://www.goodreads.com/review/list/" + reviewer.UserID + "?shelf=read";
+            var web = new HtmlWeb();
+            var document = web.Load(readBooksURL); // loads the webpage
+
+            var bookReviewHTMLElements = document.DocumentNode.QuerySelectorAll("tr.review");
+
+            foreach (var bookReviewHTMLElement in bookReviewHTMLElements)
+            {
+                if (bookReviewHTMLElement.QuerySelector("td.rating div span").ChildAttributes("title").Any())
+                {
+                    string bookTitleUnformatted = HtmlEntity.DeEntitize(bookReviewHTMLElement.QuerySelector("td.title div a").InnerText);
+                    string bookTitle = System.Text.RegularExpressions.Regex.Replace(bookTitleUnformatted, @"\s\s+|\n", "");
+                    var bookURL = "https://www.goodreads.com" + HtmlEntity.DeEntitize(bookReviewHTMLElement.QuerySelector("td.title div a").Attributes["href"].Value);
+                    var bookNumRatingsStr = HtmlEntity.DeEntitize(bookReviewHTMLElement.QuerySelector("td.num_ratings div.value").InnerText);
+                    var bookNumRatingsStrFormatted = System.Text.RegularExpressions.Regex.Replace(bookNumRatingsStr, @"\s+|\n|,", "");
+                    int bookNumRatings = int.Parse(bookNumRatingsStrFormatted);
+
+                    Book book = new Book(bookTitle, bookURL, bookNumRatings);
+                    Console.WriteLine(book.ToString());
+                }
+            }
+        }
+
+        private static int getIDFromProfileURL(string profileURL)
         {
             var web = new HtmlWeb();
             var document = web.Load(profileURL);
@@ -109,101 +149,6 @@ namespace BetterReads
                 .SelectSingleNode("//a[@class='js-ratingDistTooltip']")
                 .Attributes["data-user-id"].Value;
             return int.Parse(profileIDString);
-        }
-
-
-        /*
-        private List<BookReview> getBookReviewInfoList(string reviewURL)
-        {
-
-            var web = new HtmlWeb();
-            var document = web.Load(reviewURL); // loads the webpage
-
-            var bookReviews = new List<BookReview>(); // list of all the book reviews from above
-
-            var bookReviewHTMLElements = document.DocumentNode.QuerySelectorAll("tr.review");
-
-            foreach (var bookReviewHTMLElement in bookReviewHTMLElements)
-            {
-                // if the book actually has a rating then we add it. if it does not, we do not.
-                // this is so books neither party has rated arent listed as "similar" or "dissimilar" later on.
-                // they simply should not be added.
-                if (bookReviewHTMLElement.QuerySelector("td.rating div span").ChildAttributes("title").Any())
-                {
-                    var title = HtmlEntity.DeEntitize(bookReviewHTMLElement.QuerySelector("td.title div a").InnerText);
-                    var titleFormatted = System.Text.RegularExpressions.Regex.Replace(title, @"\s\s+|\n", "");
-                    var url = "https://www.goodreads.com" + HtmlEntity.DeEntitize(bookReviewHTMLElement.QuerySelector("td.title div a").Attributes["href"].Value);
-                    var numRatingsStr = HtmlEntity.DeEntitize(bookReviewHTMLElement.QuerySelector("td.num_ratings div.value").InnerText);
-                    var numRatingsStrFormatted = System.Text.RegularExpressions.Regex.Replace(numRatingsStr, @"\s+|\n|,", "");
-                    int numRatings = int.Parse(numRatingsStrFormatted);
-
-                    Book tBook = new Book(title, url, numRatings);
-
-                    var ratingTitle = HtmlEntity.DeEntitize(bookReviewHTMLElement.QuerySelector("td.rating div span").Attributes["title"].Value);
-
-                    // for reasoning behind the following, see Rating entry of BookReview class
-                    int rating = 0;
-                    switch (ratingTitle)
-                    {
-                        case "did not like it":
-                            rating = 1;
-                            break;
-
-                        case "it was ok":
-                            rating = 2;
-                            break;
-
-                        case "liked it":
-                            rating = 3;
-                            break;
-
-                        case "really liked it":
-                            rating = 4;
-                            break;
-
-                        case "it was amazing":
-                            rating = 5;
-                            break;
-                    }
-                    bookReviews.Add(new BookReview(tBook, rating, ));
-                }
-            }
-
-            return bookReviews;
-        }
-
-        private List<Reviewer> getReviews(string bookURL)
-        {
-            var web = new HtmlWeb();
-            var document = web.Load(bookURL); // loads the webpage
-
-            var reviewers = new List<Reviewer>(); // list of all the reviewers
-
-            var reviewerHTMLElements = document.DocumentNode.QuerySelectorAll("div.ReviewerProfile");
-
-            Console.WriteLine(reviewerHTMLElements.Count);
-
-            foreach (var reviewerHTMLElement in reviewerHTMLElements)
-            {
-                string name = HtmlEntity.DeEntitize(reviewerHTMLElement.QuerySelector("section.ReviewerProfile__info span.Text__title4 div a").InnerText);
-                string url = HtmlEntity.DeEntitize(reviewerHTMLElement.QuerySelector("section.ReviewerProfile__info span.Text__title4 div a").Attributes["href"].Value);
-                var userID = System.Text.RegularExpressions.Regex.Replace(url, @"https://www\.goodreads\.com/user/show/|-.+", "");
-                Console.WriteLine("UserID: " + userID);
-                reviewers.Add(new Reviewer() { Url = url, Name = name, UserID = userID });
-            }
-            return reviewers;
-            
-        }
-        */
-
-        static void Main(string[] args)
-        {
-            //string mainProfileUrl = args[0];
-            string mainProfileUrl = "https://www.goodreads.com/author/show/20013214.Jack_Edwards";
-            int mainID = Scraper.getIDFromProfileURL(mainProfileUrl);
-            string mainUsername = Scraper.getUsernameFromProfileID(mainProfileUrl);
-            Reviewer mainReviewer = new Reviewer(mainUsername, mainProfileUrl, mainID);
-            Console.WriteLine(mainID);
         }
 
         private static string getUsernameFromProfileID(string profileURL)
