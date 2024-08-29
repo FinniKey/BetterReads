@@ -99,8 +99,20 @@ namespace BetterReads
         }
     }
 
-    class Scraper
+    public static class Scraper
     {
+        static int getIDFromProfileURL(string profileURL)
+        {
+            var web = new HtmlWeb();
+            var document = web.Load(profileURL);
+            string profileIDString = document.DocumentNode
+                .SelectSingleNode("//a[@class='js-ratingDistTooltip']")
+                .Attributes["data-user-id"].Value;
+            return int.Parse(profileIDString);
+        }
+
+
+        /*
         private List<BookReview> getBookReviewInfoList(string reviewURL)
         {
 
@@ -124,6 +136,8 @@ namespace BetterReads
                     var numRatingsStr = HtmlEntity.DeEntitize(bookReviewHTMLElement.QuerySelector("td.num_ratings div.value").InnerText);
                     var numRatingsStrFormatted = System.Text.RegularExpressions.Regex.Replace(numRatingsStr, @"\s+|\n|,", "");
                     int numRatings = int.Parse(numRatingsStrFormatted);
+
+                    Book tBook = new Book(title, url, numRatings);
 
                     var ratingTitle = HtmlEntity.DeEntitize(bookReviewHTMLElement.QuerySelector("td.rating div span").Attributes["title"].Value);
 
@@ -151,7 +165,7 @@ namespace BetterReads
                             rating = 5;
                             break;
                     }
-                    bookReviews.Add(new BookReview() { Url = url, Title = titleFormatted, Rating = rating, NumRatings = numRatings });
+                    bookReviews.Add(new BookReview(tBook, rating, ));
                 }
             }
 
@@ -178,11 +192,19 @@ namespace BetterReads
                 reviewers.Add(new Reviewer() { Url = url, Name = name, UserID = userID });
             }
             return reviewers;
+            
         }
+        */
 
         static void Main(string[] args)
         {
-            var scraper = new Scraper();
+            //string mainProfileUrl = args[0];
+            string mainProfileUrl = "https://www.goodreads.com/author/show/20013214.Jack_Edwards";
+            int mainID = Scraper.getIDFromProfileURL(mainProfileUrl);
+            Console.WriteLine(mainID);
+
+
+            /*var scraper = new Scraper();
 
             //List<BookReview> bookReviews = scraper.getBookReviewInfoList("https://www.goodreads.com/review/list/91520258-jack-edwards?shelf=read");
 
@@ -197,6 +219,7 @@ namespace BetterReads
             {
                 Console.WriteLine(reviewer.Name + ": " + reviewer.UserID);
             }
+            */
         }
     }
 }
