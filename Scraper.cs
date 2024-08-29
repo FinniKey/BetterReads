@@ -71,11 +71,11 @@ namespace BetterReads
     {
         public string Name { get; set; }
         public string Url { get; set; }
-        public string UserID { get; set; }
+        public int UserID { get; set; }
         public List<BookReview> Reviews { get; }
         public float Similarity { get; set; }
 
-        public Reviewer(string name, string url, String userid)
+        public Reviewer(string name, string url, int userid)
         {
             this.Name = name;
             this.Url = url;
@@ -201,25 +201,18 @@ namespace BetterReads
             //string mainProfileUrl = args[0];
             string mainProfileUrl = "https://www.goodreads.com/author/show/20013214.Jack_Edwards";
             int mainID = Scraper.getIDFromProfileURL(mainProfileUrl);
+            string mainUsername = Scraper.getUsernameFromProfileID(mainProfileUrl);
+            Reviewer mainReviewer = new Reviewer(mainUsername, mainProfileUrl, mainID);
             Console.WriteLine(mainID);
+        }
 
-
-            /*var scraper = new Scraper();
-
-            //List<BookReview> bookReviews = scraper.getBookReviewInfoList("https://www.goodreads.com/review/list/91520258-jack-edwards?shelf=read");
-
-            // foreach (var BookReview in bookReviews)
-            // {
-            //     Console.WriteLine(BookReview.Rating + "/5 - " + BookReview.Title + ". Ratings: " + BookReview.NumRatings + "\n" + BookReview.Url + "\n");
-            // }
-
-            var reviewers = scraper.getReviews("https://www.goodreads.com/book/show/13623848-the-song-of-achilles");
-
-            foreach (Reviewer reviewer in reviewers)
-            {
-                Console.WriteLine(reviewer.Name + ": " + reviewer.UserID);
-            }
-            */
+        private static string getUsernameFromProfileID(string profileURL)
+        {
+            var web = new HtmlWeb();
+            var document = web.Load(profileURL);
+            return document.DocumentNode
+                .SelectSingleNode("//span[@itemprop='name']")
+                .InnerText;
         }
     }
 }
