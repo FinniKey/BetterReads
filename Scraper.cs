@@ -70,20 +70,15 @@ namespace BetterReads
 
         public static int ConvertRating(string ratingString)
         {
-            switch (ratingString)
+            return ratingString switch
             {
-                case "did not like it":
-                    return 1;
-                case "it was ok":
-                    return 2;
-                case "liked it":
-                    return 3;
-                case "really liked it":
-                    return 4;
-                case "it was amazing":
-                    return 5;
-            }
-            return 0;
+                "did not like it" => 1,
+                "it was ok" => 2,
+                "liked it" => 3,
+                "really liked it" => 4,
+                "it was amazing" => 5,
+                _ => 0,
+            };
         }
 
         public override string ToString()
