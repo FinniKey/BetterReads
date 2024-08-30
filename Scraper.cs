@@ -134,7 +134,7 @@ namespace BetterReads
             Console.WriteLine(mainReviewer.Name + " reviews:");
             foreach (BookReview bookReview in mainReviewer.Reviews)
             {
-                Console.WriteLine(bookReview.ToString());
+                GetReviewersFromBook(bookReview.ReviewedBook);
             }
         }
 
@@ -169,21 +169,53 @@ namespace BetterReads
 
         public static int getIDFromProfileURL(string profileURL)
         {
+            // TODO: Private profiles throw a NullReferenceException here. Make a function that checks if the profile is private or not
             var web = new HtmlWeb();
             var document = web.Load(profileURL);
-            string profileIDString = document.DocumentNode
-                .SelectSingleNode("//a[@class='js-ratingDistTooltip']")
-                .Attributes["data-user-id"].Value;
-            return int.Parse(profileIDString);
+            string link = document.DocumentNode.SelectSingleNode("//link[@title='Bookshelves']").Attributes["href"].Value;
+            var userIDString = System.Text.RegularExpressions.Regex.Replace(link, @"https://www.goodreads.com/review/list_rss/|-.+", "");
+            return int.Parse(userIDString);
         }
 
         public static string getUsernameFromProfileID(string profileURL)
         {
             var web = new HtmlWeb();
             var document = web.Load(profileURL);
-            return document.DocumentNode
-                .SelectSingleNode("//span[@itemprop='name']")
+            try
+            {
+                string userName = document.DocumentNode
+                .SelectSingleNode("//h1[@class='userProfileName']")
                 .InnerText;
+                if (string.IsNullOrEmpty(userName)) return "";
+                return userName;
+            }
+            catch (System.NullReferenceException)
+            {
+                return "";
+            }
+
+        }
+
+        public static List<Reviewer> GetReviewersFromBook(Book book)
+        {
+            List<Reviewer> reviewers = new List<Reviewer>();
+
+            var web = new HtmlWeb();
+            var document = web.Load(book.Url); // loads the webpage
+
+            var bookProfileReviewElements = document.DocumentNode.QuerySelectorAll("div.ReviewerProfile__name");
+
+            foreach (var bookProfileReviewElement in bookProfileReviewElements)
+            {
+                string reviewerUrl = HtmlEntity.DeEntitize(bookProfileReviewElement.QuerySelector("a").Attributes["href"].Value);
+                Console.WriteLine(reviewerUrl);
+                Reviewer r = new Reviewer(reviewerUrl);
+                Console.WriteLine("Adding reviewer to list: " + r.Name);
+                reviewers.Add(r);
+                Console.WriteLine("Added.");
+            }
+
+            return reviewers;
         }
     }
 }
