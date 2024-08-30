@@ -95,12 +95,16 @@ namespace BetterReads
         public List<BookReview> Reviews { get; }
         public float Similarity { get; set; }
 
-        public Reviewer(string name, string url, int userid)
+        public Reviewer(string profileUrl)
         {
-            this.Name = name;
-            this.Url = url;
-            this.UserID = userid;
-            Reviews = new List<BookReview>();
+            int mainID = Scraper.getIDFromProfileURL(profileUrl);
+            string mainUsername = Scraper.getUsernameFromProfileID(profileUrl);
+
+            this.Name = mainUsername;
+            this.Url = profileUrl;
+            this.UserID = mainID;
+            this.Reviews = new List<BookReview>();
+            Scraper.addReviewersReadBooks(this);
         }
 
         public bool addReview(BookReview br)
@@ -125,10 +129,7 @@ namespace BetterReads
         {
             //string mainProfileUrl = args[0];
             string mainProfileUrl = "https://www.goodreads.com/author/show/20013214.Jack_Edwards"; // example for ease of use
-            int mainID = Scraper.getIDFromProfileURL(mainProfileUrl);
-            string mainUsername = Scraper.getUsernameFromProfileID(mainProfileUrl);
-            Reviewer mainReviewer = new Reviewer(mainUsername, mainProfileUrl, mainID); // user everyone is compared to
-            Scraper.addReviewersReadBooks(mainReviewer);
+            Reviewer mainReviewer = new Reviewer(mainProfileUrl); // user everyone is compared to
 
             Console.WriteLine(mainReviewer.Name + " reviews:");
             foreach (BookReview bookReview in mainReviewer.Reviews)
@@ -137,7 +138,7 @@ namespace BetterReads
             }
         }
 
-        private static void addReviewersReadBooks(Reviewer reviewer)
+        public static void addReviewersReadBooks(Reviewer reviewer)
         {
             string readBooksURL = "https://www.goodreads.com/review/list/" + reviewer.UserID + "?shelf=read";
             var web = new HtmlWeb();
@@ -166,7 +167,7 @@ namespace BetterReads
             }
         }
 
-        private static int getIDFromProfileURL(string profileURL)
+        public static int getIDFromProfileURL(string profileURL)
         {
             var web = new HtmlWeb();
             var document = web.Load(profileURL);
@@ -176,7 +177,7 @@ namespace BetterReads
             return int.Parse(profileIDString);
         }
 
-        private static string getUsernameFromProfileID(string profileURL)
+        public static string getUsernameFromProfileID(string profileURL)
         {
             var web = new HtmlWeb();
             var document = web.Load(profileURL);
